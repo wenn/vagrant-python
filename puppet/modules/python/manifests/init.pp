@@ -16,16 +16,22 @@ class python () {
         require => Package['python-devel']
     }
 
+    package { 'python-virtualenv':
+        ensure  => installed,
+        require => Package['python-devel']
+    }
+
+    package { 'Fabric':
+        ensure   => installed,
+        provider => pip,
+        require  => File['/usr/bin/pip-python'],
+    }
+
     # fix for puppet provider trying to run pip-python
     file { '/usr/bin/pip-python':
        ensure  => 'link',
        target  => '/usr/bin/pip',
        require => Package['python-pip'],
-    }
-
-    package { 'python-virtualenv':
-        ensure  => installed,
-        require => Package['python-devel']
     }
 
 }

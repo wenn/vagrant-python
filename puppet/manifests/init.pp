@@ -3,6 +3,7 @@ Package {
 }
 
 include git
+include epel
 include python
 
 service { 'iptables':

@@ -1,6 +1,6 @@
 class python::install () {
 
-    $version = "3.3.3"
+    $version = "2.7.6"
     $python_source = "Python-${version}.tar.xz"
     $cwd = "/tmp"
 
@@ -15,26 +15,42 @@ class python::install () {
         loglevel    => info,
         require     => Package["wget"],
         cwd         => $cwd,
-        refreshonly => true,
+        unless      => "which python2.7 2>/dev/null",
     }
 
-    exec { 'decode python tar':
-        command      => "xz -d Python-${version}.tar.xz",
+    exec { 'decode tar':
+        command     => "xz -d Python-${version}.tar.xz",
         path        => "/usr/bin",
         creates     => "${cwd}/Python-${version}.tar",
         cwd         => $cwd,
         refreshonly => true,
     }
 
-    exec { 'extract python tar':
-        command      => "tar -xvf Python-${version}.tar",
+    exec { 'extract tar':
+        command     => "tar -xvf Python-${version}.tar",
         path        => "/bin",
         creates     => "${cwd}/Python-${version}",
         cwd         => $cwd,
         refreshonly => true,
     }
 
+    exec { 'configure':
+        command     => "/bin/sh ./configure",
+        path        => "/bin:/usr/bin",
+        cwd         => "${cwd}/Python-${version}",
+        refreshonly => true,
+    }
+
+    exec { 'make install':
+        command     => "make && make install",
+        path        => "/usr/bin:/usr/local:/bin",
+        cwd         => "${cwd}/Python-${version}",
+        refreshonly => true,
+    }
+
     Exec["download python"]
-    ~> Exec["decode python tar"]
-    ~> Exec["extract python tar"]
+    ~> Exec["decode tar"]
+    ~> Exec["extract tar"]
+    ~> Exec["configure"]
+    ~> Exec["make install"]
 }

@@ -1,6 +1,6 @@
 class python::install () {
 
-    $version = "2.7.6"
+    $version = "3.5.0"
     $python_source = "Python-${version}.tar.xz"
     $cwd = "/tmp"
 
@@ -15,7 +15,7 @@ class python::install () {
         loglevel    => info,
         require     => Package["wget"],
         cwd         => $cwd,
-        unless      => "which python2.7 2>/dev/null",
+        unless      => "which python3.5 2>/dev/null",
     }
 
     exec { 'decode tar':
@@ -42,7 +42,7 @@ class python::install () {
     }
 
     exec { 'make install':
-        command     => "make && make install",
+        command     => "make && make altinstall",
         path        => "/usr/bin:/usr/local:/bin",
         cwd         => "${cwd}/Python-${version}",
         refreshonly => true,
